@@ -2,3 +2,11 @@ fastapi
 uvicorn
 python-multipart
 pydantic
+langchain
+langchain-core
+langchain-community
+langgraph
+langchain[groq]
+python-dotenv
+docx2txt
+python-docx
