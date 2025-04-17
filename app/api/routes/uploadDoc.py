@@ -8,6 +8,6 @@ router = APIRouter()
 async def create_upload_file(file: UploadFile = File(...)):
     content = await file.read()
     output = fetched_data.extract_text_from_docx(content)
-    print(output)
+    # print(output)
     print({"filename": file.filename, "content_type": file.content_type})
     return JSONResponse(content={"filename": file.filename, "content_type": file.content_type})
