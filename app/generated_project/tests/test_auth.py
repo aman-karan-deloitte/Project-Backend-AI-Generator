@@ -3,10 +3,11 @@ from app.main import app
 @pytest.fixture
 def test_app():
     return app
-def test_get_users():
-    response = test_app().get("/api/users")
+
+def test_login():
+    response = test_app().post("/api/auth/login")
     assert response.status_code == 200
 
-def test_get_items():
-    response = test_app().get("/api/items")
+def test_get_user():
+    response = test_app().get("/api/auth/user")
     assert response.status_code == 200

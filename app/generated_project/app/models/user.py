@@ -1,8 +1,9 @@
 from pydantic import BaseModel
-
 class User(BaseModel):
     id: int
     name: str
-    email: str
-    password: str
-    role: str
+
+class User:
+    def __init__(self, id, name):
+        self.id = id
+        self.name = name

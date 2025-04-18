@@ -76,12 +76,13 @@ class getBackendData:
         print("\nGenerating code based on parsed data and folder structure...")
         prompt = ChatPromptTemplate.from_template(
              """Generate detail code that creates all necessary files and folders and with error handling according to the specified 
-                folder structure: {folder_structure}. Populate these files with the required all necessary code and testcases
+                folder structure: {folder_structure}. Populate these files with the required all necessary code 
                 based on the parsed data: {parsed_data}. Include all necessary modules, classes,
-                and functions according to the requirements specified in the document.
+                functions and import only 'OS' according to the requirements specified in the document.
                 Output only the code,without python marker, without any markdown formatting,without any code block markers(e.g. python, ```), or any additional text and only import 'os'.
                 Generate a single root folder generated_project.
-                """       
+                also, Generate unit test cases for the specified requirements using pytest framework. 
+                """            
         )
         chain = prompt | self.llm
         output_code = chain.invoke({

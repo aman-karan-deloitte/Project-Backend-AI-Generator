@@ -1,291 +1,139 @@
 import os
 
-generated_project = 'generated_project'
-if not os.path.exists(generated_project):
-    os.makedirs(generated_project)
-    
-app_folder = os.path.join(generated_project, 'app')
-if not os.path.exists(app_folder):
-    os.makedirs(app_folder)
-    
-api_folder = os.path.join(app_folder, 'api')
-if not os.path.exists(api_folder):
-    os.makedirs(api_folder)
-    
-routes_folder = os.path.join(api_folder, 'routes')
-if not os.path.exists(routes_folder):
-    os.makedirs(routes_folder)
+def generate_project_structure():
+    project_root = 'generated_project'
+    os.mkdir(project_root)
 
-models_folder = os.path.join(app_folder, 'models')
-if not os.path.exists(models_folder):
-    os.makedirs(models_folder)
+    app_folder = os.path.join(project_root, 'app')
+    os.mkdir(app_folder)
 
-services_folder = os.path.join(app_folder, 'services')
-if not os.path.exists(services_folder):
-    os.makedirs(services_folder)
+    api_folder = os.path.join(app_folder, 'api')
+    os.mkdir(api_folder)
 
-tests_folder = os.path.join(generated_project, 'tests')
-if not os.path.exists(tests_folder):
-    os.makedirs(tests_folder)
+    routes_folder = os.path.join(api_folder, 'routes')
+    os.mkdir(routes_folder)
 
-with open(os.path.join(app_folder, 'database.py'), 'w') as file:
-    file.write('from fastapi import FastAPI\n')
-    file.write('from fastapi.responses import JSONResponse\n')
-    file.write('from fastapi.requests import Request\n')
-    file.write('from fastapi import Depends\n')
-    file.write('from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm\n')
-    file.write('from pydantic import BaseModel\n')
-    file.write('from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float, Boolean\n')
-    file.write('from sqlalchemy.ext.declarative import declarative_base\n')
-    file.write('from sqlalchemy.orm import sessionmaker\n')
-    file.write('from datetime import datetime\n')
-    file.write('from typing import List\n')
-    file.write('\n')
-    file.write('SQLALCHEMY_DATABASE_URL = "postgresql://user:password@localhost/db"\n')
-    file.write('engine = create_engine(SQLALCHEMY_DATABASE_URL)\n')
-    file.write('SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)\n')
-    file.write('\n')
-    file.write('Base = declarative_base()\n')
-    file.write('\n')
-    file.write('class User(Base):\n')
-    file.write('    __tablename__ = "users"\n')
-    file.write('\n')
-    file.write('    id = Column(Integer, primary_key=True, index=True)\n')
-    file.write('    name = Column(String)\n')
-    file.write('    email = Column(String, unique=True, index=True)\n')
-    file.write('    password = Column(String)\n')
-    file.write('    role = Column(String)\n')
-    file.write('\n')
-    file.write('class Leave(Base):\n')
-    file.write('    __tablename__ = "leaves"\n')
-    file.write('\n')
-    file.write('    id = Column(Integer, primary_key=True, index=True)\n')
-    file.write('    user_id = Column(Integer, Column(Integer, ForeignKey("users.id")))\n')
-    file.write('    start_date = Column(DateTime)\n')
-    file.write('    end_date = Column(DateTime)\n')
-    file.write('    reason = Column(String)\n')
-    file.write('    status = Column(String)\n')
-    file.write('\n')
-    file.write('class Pod(Base):\n')
-    file.write('    __tablename__ = "pods"\n')
-    file.write('\n')
-    file.write('    id = Column(Integer, primary_key=True, index=True)\n')
-    file.write('    name = Column(String)\n')
-    file.write('    members = Column(String)\n')
+    user_route = os.path.join(routes_folder, 'user.py')
+    item_route = os.path.join(routes_folder, 'item.py')
+    init_route = os.path.join(routes_folder, '__init__.py')
 
-with open(os.path.join(app_folder, 'main.py'), 'w') as file:
-    file.write('from fastapi import FastAPI, Depends\n')
-    file.write('from fastapi.responses import JSONResponse\n')
-    file.write('from fastapi.requests import Request\n')
-    file.write('from fastapi import FastAPI\n')
-    file.write('from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm\n')
-    file.write('from pydantic import BaseModel\n')
-    file.write('from database import SessionLocal, engine\n')
-    file.write('from database import User, Leave, Pod\n')
-    file.write('from typing import List\n')
-    file.write('\n')
-    file.write('app = FastAPI()\n')
-    file.write('\n')
-    file.write('oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")\n')
-    file.write('\n')
-    file.write('def get_db():\n')
-    file.write('    db = SessionLocal()\n')
-    file.write('    try:\n')
-    file.write('        yield db\n')
-    file.write('    finally:\n')
-    file.write('        db.close()\n')
-    file.write('\n')
-    file.write('@app.post("/login")\n')
-    file.write('def login(user: OAuth2PasswordRequestForm = Depends()):\n')
-    file.write('    db = SessionLocal()\n')
-    file.write('    user_obj = db.query(User).filter(User.email == user.username).first()\n')
-    file.write('    if not user_obj:\n')
-    file.write('        return JSONResponse({"error": "User not found"}, status_code=401)\n')
-    file.write('    if not user_obj.password == user.password:\n')
-    file.write('        return JSONResponse({"error": "Password incorrect"}, status_code=401)\n')
-    file.write('    return JSONResponse({"access_token": user_obj.email, "token_type": "bearer"})\n')
-    file.write('\n')
-    file.write('@app.get("/api/auth/user")\n')
-    file.write('def get_user(db: SessionLocal = Depends(get_db), token: str = Depends(oauth2_scheme)):\n')
-    file.write('    user_obj = db.query(User).filter(User.email == token).first()\n')
-    file.write('    return user_obj\n')
+    with open(user_route, 'w') as f:
+        f.write('from fastapi import APIRouter\nrouter = APIRouter()')
 
-with open(os.path.join(api_folder, 'routes', 'user.py'), 'w') as file:
-    file.write('from fastapi import APIRouter, Depends\n')
-    file.write('from fastapi.responses import JSONResponse\n')
-    file.write('from fastapi.requests import Request\n')
-    file.write('from fastapi import FastAPI\n')
-    file.write('from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm\n')
-    file.write('from pydantic import BaseModel\n')
-    file.write('from database import SessionLocal, engine\n')
-    file.write('from database import User\n')
-    file.write('from typing import List\n')
-    file.write('\n')
-    file.write('router = APIRouter()\n')
-    file.write('\n')
-    file.write('oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")\n')
-    file.write('\n')
-    file.write('def get_db():\n')
-    file.write('    db = SessionLocal()\n')
-    file.write('    try:\n')
-    file.write('        yield db\n')
-    file.write('    finally:\n')
-    file.write('        db.close()\n')
-    file.write('\n')
-    file.write('@router.post("/api/lms/leaves/apply")\n')
-    file.write('def apply_leave(user: User, db: SessionLocal = Depends(get_db), token: str = Depends(oauth2_scheme)):\n')
-    file.write('    user_obj = db.query(User).filter(User.email == token).first()\n')
-    file.write('    if not user_obj:\n')
-    file.write('        return JSONResponse({"error": "User not found"}, status_code=401)\n')
-    file.write('    leave_obj = Leave(user_id=user_obj.id, start_date=user.start_date, end_date=user.end_date, reason=user.reason)\n')
-    file.write('    db.add(leave_obj)\n')
-    file.write('    db.commit()\n')
-    file.write('    return JSONResponse({"message": "Leave applied successfully"})\n')
-    file.write('\n')
-    file.write('@router.get("/api/lms/leaves/status")\n')
-    file.write('def get_leave_status(db: SessionLocal = Depends(get_db), token: str = Depends(oauth2_scheme)):\n')
-    file.write('    user_obj = db.query(User).filter(User.email == token).first()\n')
-    file.write('    if not user_obj:\n')
-    file.write('        return JSONResponse({"error": "User not found"}, status_code=401)\n')
-    file.write('    leave_obj = db.query(Leave).filter(Leave.user_id == user_obj.id).first()\n')
-    file.write('    return JSONResponse({"status": leave_obj.status})\n')
+    with open(item_route, 'w') as f:
+        f.write('from fastapi import APIRouter\nrouter = APIRouter()')
 
-with open(os.path.join(api_folder, 'routes', 'item.py'), 'w') as file:
-    file.write('from fastapi import APIRouter, Depends\n')
-    file.write('from fastapi.responses import JSONResponse\n')
-    file.write('from fastapi.requests import Request\n')
-    file.write('from fastapi import FastAPI\n')
-    file.write('from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm\n')
-    file.write('from pydantic import BaseModel\n')
-    file.write('from database import SessionLocal, engine\n')
-    file.write('from database import User\n')
-    file.write('from typing import List\n')
-    file.write('\n')
-    file.write('router = APIRouter()\n')
-    file.write('\n')
-    file.write('oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")\n')
-    file.write('\n')
-    file.write('def get_db():\n')
-    file.write('    db = SessionLocal()\n')
-    file.write('    try:\n')
-    file.write('        yield db\n')
-    file.write('    finally:\n')
-    file.write('        db.close()\n')
-    file.write('\n')
-    file.write('@router.get("/api/pods/{pod_id}/details")\n')
-    file.write('def get_pod_details(pod_id: int, db: SessionLocal = Depends(get_db), token: str = Depends(oauth2_scheme)):\n')
-    file.write('    user_obj = db.query(User).filter(User.email == token).first()\n')
-    file.write('    if not user_obj:\n')
-    file.write('        return JSONResponse({"error": "User not found"}, status_code=401)\n')
-    file.write('    pod_obj = db.query(Pod).filter(Pod.id == pod_id).first()\n')
-    file.write('    return JSONResponse({"name": pod_obj.name, "members": pod_obj.members})\n')
-    file.write('\n')
-    file.write('@router.post("/api/pods/{pod_id}/recommend")\n')
-    file.write('def recommend_employee(pod_id: int, user: User, db: SessionLocal = Depends(get_db), token: str = Depends(oauth2_scheme)):\n')
-    file.write('    user_obj = db.query(User).filter(User.email == token).first()\n')
-    file.write('    if not user_obj:\n')
-    file.write('        return JSONResponse({"error": "User not found"}, status_code=401)\n')
-    file.write('    pod_obj = db.query(Pod).filter(Pod.id == pod_id).first()\n')
-    file.write('    pod_obj.members.append(user.id)\n')
-    file.write('    db.commit()\n')
-    file.write('    return JSONResponse({"message": "Employee recommended successfully"})\n')
+    with open(init_route, 'w') as f:
+        f.write('')
 
-with open(os.path.join(routes_folder, '__init__.py'), 'w') as file:
-    file.write('from .user import router as user_router\n')
-    file.write('from .item import router as item_router\n')
+    models_folder = os.path.join(app_folder, 'models')
+    os.mkdir(models_folder)
 
-with open(os.path.join(models_folder, 'user.py'), 'w') as file:
-    file.write('from pydantic import BaseModel\n')
-    file.write('\n')
-    file.write('class User(BaseModel):\n')
-    file.write('    id: int\n')
-    file.write('    name: str\n')
-    file.write('    email: str\n')
-    file.write('    password: str\n')
-    file.write('    role: str\n')
+    user_model = os.path.join(models_folder, 'user.py')
+    item_model = os.path.join(models_folder, 'item.py')
+    init_model = os.path.join(models_folder, '__init__.py')
 
-with open(os.path.join(models_folder, 'item.py'), 'w') as file:
-    file.write('from pydantic import BaseModel\n')
-    file.write('\n')
-    file.write('class Item(BaseModel):\n')
-    file.write('    id: int\n')
-    file.write('    name: str\n')
-    file.write('    price: float\n')
-    file.write('    description: str\n')
+    with open(user_model, 'w') as f:
+        f.write('from pydantic import BaseModel\nclass User(BaseModel):\n    id: int\n    name: str')
 
-with open(os.path.join(models_folder, '__init__.py'), 'w') as file:
-    file.write('from .user import User\n')
-    file.write('from .item import Item\n')
+    with open(item_model, 'w') as f:
+        f.write('from pydantic import BaseModel\nclass Item(BaseModel):\n    id: int\n    name: str')
 
-with open(os.path.join(generated_project, 'Dockerfile'), 'w') as file:
-    file.write('FROM python:3.9-slim\n')
-    file.write('\n')
-    file.write('WORKDIR /app\n')
-    file.write('\n')
-    file.write('COPY requirements.txt .\n')
-    file.write('RUN pip install --no-cache-dir -r requirements.txt\n')
-    file.write('\n')
-    file.write('COPY . .\n')
-    file.write('\n')
-    file.write('CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]\n')
+    with open(init_model, 'w') as f:
+        f.write('')
 
-with open(os.path.join(generated_project, 'requirements.txt'), 'w') as file:
-    file.write('fastapi\n')
-    file.write('uvicorn\n')
-    file.write('pydantic\n')
-    file.write('sqlalchemy\n')
-    file.write('psycopg2\n')
-    file.write('python-dotenv\n')
+    services_folder = os.path.join(app_folder, 'services')
+    os.mkdir(services_folder)
 
-with open(os.path.join(generated_project, '.env'), 'w') as file:
-    file.write('DB_HOST=localhost\n')
-    file.write('DB_PORT=5432\n')
-    file.write('DB_NAME=mydb\n')
-    file.write('DB_USER=myuser\n')
-    file.write('DB_PASSWORD=mypassword\n')
+    database_file = os.path.join(app_folder, 'database.py')
+    with open(database_file, 'w') as f:
+        f.write('from sqlalchemy import create_engine\nengine = create_engine("postgresql://user:password@host:port/dbname")')
 
-with open(os.path.join(generated_project, 'README.md'), 'w') as file:
-    file.write('# My Project\n')
-    file.write('This is my project.\n')
+    main_file = os.path.join(app_folder, 'main.py')
+    with open(main_file, 'w') as f:
+        f.write('from fastapi import FastAPI\napp = FastAPI()')
 
-with open(os.path.join(tests_folder, 'test_main.py'), 'w') as file:
-    file.write('from fastapi.testclient import TestClient\n')
-    file.write('from main import app\n')
-    file.write('\n')
-    file.write('client = TestClient(app)\n')
-    file.write('\n')
-    file.write('def test_login():\n')
-    file.write('    response = client.post("/login", data={"username": "user", "password": "password"})\n')
-    file.write('    assert response.status_code == 200\n')
-    file.write('\n')
-    file.write('def test_get_user():\n')
-    file.write('    response = client.get("/api/auth/user", headers={"Authorization": "Bearer token"})\n')
-    file.write('    assert response.status_code == 200\n')
+    tests_folder = os.path.join(project_root, 'tests')
+    os.mkdir(tests_folder)
 
-with open(os.path.join(tests_folder, 'test_user.py'), 'w') as file:
-    file.write('from fastapi.testclient import TestClient\n')
-    file.write('from user import router as user_router\n')
-    file.write('\n')
-    file.write('client = TestClient(user_router)\n')
-    file.write('\n')
-    file.write('def test_apply_leave():\n')
-    file.write('    response = client.post("/api/lms/leaves/apply", json={"start_date": "2022-01-01", "end_date": "2022-01-10", "reason": "vacation"})\n')
-    file.write('    assert response.status_code == 200\n')
-    file.write('\n')
-    file.write('def test_get_leave_status():\n')
-    file.write('    response = client.get("/api/lms/leaves/status")\n')
-    file.write('    assert response.status_code == 200\n')
+    test_main = os.path.join(tests_folder, 'test_main.py')
+    with open(test_main, 'w') as f:
+        f.write('import pytest\nfrom app.main import app\n@pytest.fixture\ndef test_app():\n    return app')
 
-with open(os.path.join(tests_folder, 'test_item.py'), 'w') as file:
-    file.write('from fastapi.testclient import TestClient\n')
-    file.write('from item import router as item_router\n')
-    file.write('\n')
-    file.write('client = TestClient(item_router)\n')
-    file.write('\n')
-    file.write('def test_get_pod_details():\n')
-    file.write('    response = client.get("/api/pods/1/details")\n')
-    file.write('    assert response.status_code == 200\n')
-    file.write('\n')
-    file.write('def test_recommend_employee():\n')
-    file.write('    response = client.post("/api/pods/1/recommend", json={"user_id": 1})\n')
-    file.write('    assert response.status_code == 200\n')
+    docker_file = os.path.join(project_root, 'Dockerfile')
+    with open(docker_file, 'w') as f:
+        f.write('FROM python:3.9-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install -r requirements.txt\nCOPY . .\nCMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]')
+
+    requirements_file = os.path.join(project_root, 'requirements.txt')
+    with open(requirements_file, 'w') as f:
+        f.write('fastapi\npydantic\nsqlalchemy\n')
+
+    env_file = os.path.join(project_root, '.env')
+    with open(env_file, 'w') as f:
+        f.write('DB_HOST=localhost\nDB_PORT=5432\nDB_NAME=mydb\nDB_USER=myuser\nDB_PASSWORD=mypassword')
+
+    readme_file = os.path.join(project_root, 'README.md')
+    with open(readme_file, 'w') as f:
+        f.write('# My Project\nThis is my project.')
+
+    user_route = os.path.join(routes_folder, 'user.py')
+    with open(user_route, 'a') as f:
+        f.write('\n\nclass UserRoute:\n    def __init__(self, app):\n        self.app = app\n\n    def get_users(self):\n        return [{"id": 1, "name": "John"}]')
+
+    item_route = os.path.join(routes_folder, 'item.py')
+    with open(item_route, 'a') as f:
+        f.write('\n\nclass ItemRoute:\n    def __init__(self, app):\n        self.app = app\n\n    def get_items(self):\n        return [{"id": 1, "name": "Item1"}]')
+
+    main_file = os.path.join(app_folder, 'main.py')
+    with open(main_file, 'a') as f:
+        f.write('\n\nfrom app.api.routes import user, item\n\napp.include_router(user.router)\napp.include_router(item.router)')
+
+    user_model = os.path.join(models_folder, 'user.py')
+    with open(user_model, 'a') as f:
+        f.write('\n\nclass User:\n    def __init__(self, id, name):\n        self.id = id\n        self.name = name')
+
+    item_model = os.path.join(models_folder, 'item.py')
+    with open(item_model, 'a') as f:
+        f.write('\n\nclass Item:\n    def __init__(self, id, name):\n        self.id = id\n        self.name = name')
+
+    test_main = os.path.join(tests_folder, 'test_main.py')
+    with open(test_main, 'a') as f:
+        f.write('\ndef test_get_users():\n    response = test_app().get("/api/users")\n    assert response.status_code == 200\n\ndef test_get_items():\n    response = test_app().get("/api/items")\n    assert response.status_code == 200')
+
+    dashboard_route = os.path.join(routes_folder, 'dashboard.py')
+    with open(dashboard_route, 'w') as f:
+        f.write('from fastapi import APIRouter\nrouter = APIRouter()\n@router.get("/api/dashboard/tiles")\ndef get_dashboard_data():\n    return [{"id": 1, "name": "Tile1"}]')
+
+    lms_route = os.path.join(routes_folder, 'lms.py')
+    with open(lms_route, 'w') as f:
+        f.write('from fastapi import APIRouter\nrouter = APIRouter()\n@router.post("/api/lms/leaves/apply")\ndef apply_for_leave():\n    return {"message": "Leave applied successfully"}\n@router.get("/leave/status")\ndef get_leave_status():\n    return {"status": "Pending"}\n@router.patch("/leave/approve/{id}")\ndef approve_leave(id):\n    return {"message": "Leave approved successfully"}')
+
+    pods_route = os.path.join(routes_folder, 'pods.py')
+    with open(pods_route, 'w') as f:
+        f.write('from fastapi import APIRouter\nrouter = APIRouter()\n@router.get("/api/pods/{pod_id}/details")\ndef get_pod_details(pod_id):\n    return {"id": pod_id, "name": "Pod1"}\n@router.post("/api/pods/{pod_id}/recommend")\ndef recommend_employee(pod_id):\n    return {"message": "Employee recommended successfully"}')
+
+    auth_route = os.path.join(routes_folder, 'auth.py')
+    with open(auth_route, 'w') as f:
+        f.write('from fastapi import APIRouter\nfrom fastapi.security import OAuth2PasswordBearer\nrouter = APIRouter()\noauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")\n@router.post("/api/auth/login")\ndef login():\n    return {"token": "access_token"}\n@router.get("/api/auth/user")\ndef get_user():\n    return {"id": 1, "name": "John"}')
+
+    main_file = os.path.join(app_folder, 'main.py')
+    with open(main_file, 'a') as f:
+        f.write('\n\nfrom app.api.routes import dashboard, lms, pods, auth\n\napp.include_router(dashboard.router)\napp.include_router(lms.router)\napp.include_router(pods.router)\napp.include_router(auth.router)')
+
+    test_dashboard = os.path.join(tests_folder, 'test_dashboard.py')
+    with open(test_dashboard, 'w') as f:
+        f.write('import pytest\nfrom app.main import app\n@pytest.fixture\ndef test_app():\n    return app\n\ndef test_get_dashboard_data():\n    response = test_app().get("/api/dashboard/tiles")\n    assert response.status_code == 200')
+
+    test_lms = os.path.join(tests_folder, 'test_lms.py')
+    with open(test_lms, 'w') as f:
+        f.write('import pytest\nfrom app.main import app\n@pytest.fixture\ndef test_app():\n    return app\n\ndef test_apply_for_leave():\n    response = test_app().post("/api/lms/leaves/apply")\n    assert response.status_code == 200\n\ndef test_get_leave_status():\n    response = test_app().get("/leave/status")\n    assert response.status_code == 200\n\ndef test_approve_leave():\n    response = test_app().patch("/leave/approve/1")\n    assert response.status_code == 200')
+
+    test_pods = os.path.join(tests_folder, 'test_pods.py')
+    with open(test_pods, 'w') as f:
+        f.write('import pytest\nfrom app.main import app\n@pytest.fixture\ndef test_app():\n    return app\n\ndef test_get_pod_details():\n    response = test_app().get("/api/pods/1/details")\n    assert response.status_code == 200\n\ndef test_recommend_employee():\n    response = test_app().post("/api/pods/1/recommend")\n    assert response.status_code == 200')
+
+    test_auth = os.path.join(tests_folder, 'test_auth.py')
+    with open(test_auth, 'w') as f:
+        f.write('import pytest\nfrom app.main import app\n@pytest.fixture\ndef test_app():\n    return app\n\ndef test_login():\n    response = test_app().post("/api/auth/login")\n    assert response.status_code == 200\n\ndef test_get_user():\n    response = test_app().get("/api/auth/user")\n    assert response.status_code == 200')
+
+generate_project_structure()
